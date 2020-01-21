@@ -27,7 +27,7 @@ public class MissionDAOImpl implements MissionDAO {
 			Statement statement = con.createStatement();
 
 			// execute la requete
-			ResultSet resultSet = statement.executeQuery("SELECT * FROM info_train");
+			ResultSet resultSet = statement.executeQuery("SELECT * FROM ville_france");
 
 			// parcourt des éléments de réponse
 			while (resultSet.next()) {
