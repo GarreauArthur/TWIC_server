@@ -3,7 +3,9 @@ package com.controller;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +30,12 @@ public class VilleController {
 	public Ville getVille(@RequestParam(required = true, value="codeCommuneINSEE") String codeCommuneINSEE) {
 		VilleDAO vdao = new VilleDAO();
 		return vdao.getVilleFromCodeInsee(codeCommuneINSEE);
+	}
+	
+	@DeleteMapping(value = "/ville/{codeCommuneINSEE}")
+	public void deleteVille(@PathVariable String codeCommuneINSEE) {
+		VilleDAO vdao = new VilleDAO();
+		vdao.supprimer(codeCommuneINSEE);
 	}
 	
 }

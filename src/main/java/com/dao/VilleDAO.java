@@ -76,6 +76,20 @@ public class VilleDAO {
 		return null;
 	}
 	
+	
+	public void supprimer(String codeCommuneINSEE) {		
+		try {
+			Connection con = JDBCConfigurationSol1.getConnection();
+			String query = "UPDATE ville_france SET estSupprimee = 1 WHERE Code_commune_INSEE = ?";
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, codeCommuneINSEE);
+
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/*
 	public Ville getVille(Ville villeAtrouver) {
 		try {
