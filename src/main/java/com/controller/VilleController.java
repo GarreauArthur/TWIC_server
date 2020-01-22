@@ -2,7 +2,6 @@ package com.controller;
 
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,6 +83,38 @@ public class VilleController {
 		ville.setLatitude(latitude);
 		ville.setEstSupprime(false);
 		
-		vdao.creerVille(ville);;
+		vdao.creerVille(ville);
+	}
+	
+	// from https://stackoverflow.com/a/12600225/6417344
+	public final static double AVERAGE_RADIUS_OF_EARTH_KM = 6371;
+	public int calculateDistanceInKilometer(double userLat, double userLng, double venueLat, double venueLng) {
+
+	    double latDistance = Math.toRadians(userLat - venueLat);
+	    double lngDistance = Math.toRadians(userLng - venueLng);
+
+	    double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+	      + Math.cos(Math.toRadians(userLat)) * Math.cos(Math.toRadians(venueLat))
+	      * Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
+
+	    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+	    return (int) (Math.round(AVERAGE_RADIUS_OF_EARTH_KM * c));
+	}
+	
+	@GetMapping("/distance/v1/{codeVille1}/v2/{codeVille2}")
+	public int getVille(@PathVariable String codeVille1, @PathVariable String codeVille2) {
+		VilleDAO vdao = new VilleDAO();
+		Ville v1 = vdao.getVilleFromCodeInsee(codeVille1);
+		Ville v2 = vdao.getVilleFromCodeInsee(codeVille2);
+		if ( v1 == null || v2 == null ) {
+			return -1;
+		}
+		double lat1 = Double.parseDouble(v1.getLatitude());
+		double lon1 = Double.parseDouble(v1.getLongitude());
+		double lat2 = Double.parseDouble(v2.getLatitude());
+		double lon2 = Double.parseDouble(v2.getLongitude());
+		
+		return calculateDistanceInKilometer(lat1,lon1,lat2,lon2);
 	}
 }
