@@ -12,6 +12,10 @@ import com.dto.Ville;
 
 public class VilleDAO {
 
+	/**
+	 * Get all the villes
+	 * @return
+	 */
 	public ArrayList<Ville> getVilles() {
 		try {
 			ArrayList<Ville> villes = new ArrayList<Ville>();
@@ -19,7 +23,7 @@ public class VilleDAO {
 			Statement stmt;
 			stmt = con.createStatement();
 		
-		    ResultSet rs = stmt.executeQuery("SELECT * FROM ville_france");
+		    ResultSet rs = stmt.executeQuery("SELECT * FROM ville_france WHERE estSupprimee = 0");
 		    
 		    while(rs.next()){
 		    	Ville ville = new Ville();
@@ -39,13 +43,17 @@ public class VilleDAO {
 		return null;
 	}
 	
-	
+	/**
+	 * Get ville en fonction de leur code INSEE.
+	 * @param codeINSEE
+	 * @return
+	 */
 	public Ville getVilleFromCodeInsee(String codeINSEE) {
 		try {
 			
 			Connection con = JDBCConfigurationSol1.getConnection();
 			
-			String query = "SELECT * FROM ville_france WHERE Code_commune_INSEE = ? ";
+			String query = "SELECT * FROM ville_france WHERE estSupprimee = 0 AND Code_commune_INSEE = ? ";
 		
 			PreparedStatement stmt = con.prepareStatement(query);
 			stmt.setString(1, codeINSEE);
@@ -76,7 +84,10 @@ public class VilleDAO {
 		return null;
 	}
 	
-	
+	/**
+	 * Supprimer une ville.
+	 * @param codeCommuneINSEE
+	 */
 	public void supprimer(String codeCommuneINSEE) {		
 		try {
 			Connection con = JDBCConfigurationSol1.getConnection();
@@ -90,12 +101,15 @@ public class VilleDAO {
 		}
 	}
 	
-	/*
-	public Ville getVille(Ville villeAtrouver) {
+	/**
+	 * Get une ville en fonction d'informations partielles.
+	 * @param villeAtrouver
+	 * @return
+	 */
+	public ArrayList<Ville> getVille(Ville villeAtrouver) {
 		try {
 			
 			Connection con = JDBCConfigurationSol1.getConnection();
-			Statement stmt;
 			
 			String codeCommuneINSEE = villeAtrouver.getCodeCommuneINSEE();
 			String nomCommune = villeAtrouver.getNomCommune();
@@ -114,14 +128,79 @@ public class VilleDAO {
 					+ (latitude == null ? "" : " AND Latitude = ? ")
 					+ (longitude == null ? "" : " AND Longitude = ? ");
 			
-			stmt = con.prepareStatement(query);
+			PreparedStatement stmt = con.prepareStatement(query);
 			
-			// FINIR CA
+			int index = 0;
+			if (codeCommuneINSEE != null) {
+				index++;
+				stmt.setString(index, codeCommuneINSEE);
+			}
+			if (nomCommune != null) {
+				index++;
+				stmt.setString(index, nomCommune);
+			}
+			if (codePostal != null) {
+				index++;
+				stmt.setString(index, codePostal);
+			}
+			if (libelleAcheminement != null) {
+				index++;
+				stmt.setString(index, libelleAcheminement);
+			}
+			if (ligne5 != null) {
+				index++;
+				stmt.setString(index, ligne5);
+			}
+			if (latitude != null) {
+				index++;
+				stmt.setString(index, latitude);
+			}
+			if (longitude != null) {
+				index++;
+				stmt.setString(index, longitude);
+			}
 			
+			ResultSet rs = stmt.executeQuery();
+			
+			
+			ArrayList<Ville> villes = new ArrayList<Ville>();
+			while(rs.next()){
+		    	Ville ville = new Ville();
+		    	ville.setCodeCommuneINSEE(rs.getString("Code_commune_INSEE"));
+				ville.setNomCommune(rs.getString("Nom_commune"));
+				ville.setCodePostal(rs.getString("Code_postal"));
+				ville.setLibelleAcheminement(rs.getString("Libelle_acheminement"));
+				ville.setLigne5(rs.getString("Ligne_5"));
+				ville.setLatitude(rs.getString("Latitude"));
+				ville.setLongitude(rs.getString("Longitude"));
+				villes.add(ville);
+		    }
+		    return villes;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
-	*/
+	
+	public void creerVille(Ville nouvelleVille) {
+		
+		try {
+			Connection con = JDBCConfigurationSol1.getConnection();
+			String query = "INSERT INTO ville_france VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+			
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, nouvelleVille.getCodeCommuneINSEE());
+			preparedStatement.setString(2, nouvelleVille.getNomCommune());
+			preparedStatement.setString(3, nouvelleVille.getCodePostal());
+			preparedStatement.setString(4, nouvelleVille.getLibelleAcheminement());
+			preparedStatement.setString(5, nouvelleVille.getLigne5());
+			preparedStatement.setString(6, nouvelleVille.getLatitude());
+			preparedStatement.setString(7, nouvelleVille.getLongitude());
+
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }

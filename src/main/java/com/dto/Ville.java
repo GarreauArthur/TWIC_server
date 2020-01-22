@@ -21,5 +21,5 @@ public class Ville  implements Serializable  {
 	private String ligne5;
 	private String latitude;
 	private String longitude;
-	private boolean isActive;
+	private boolean estSupprime;
 }
