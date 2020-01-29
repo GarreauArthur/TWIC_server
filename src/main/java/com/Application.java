@@ -9,7 +9,7 @@ import java.sql.Statement;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-// test CI
+// test CI 2
 
 @SpringBootApplication
 public class Application {
