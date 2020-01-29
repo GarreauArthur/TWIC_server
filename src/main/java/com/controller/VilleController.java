@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -117,4 +118,35 @@ public class VilleController {
 		
 		return calculateDistanceInKilometer(lat1,lon1,lat2,lon2);
 	}
+	
+	@GetMapping("/villes/{page}")
+	public ArrayList<Ville> getVillePaginee(@PathVariable int page) {
+		VilleDAO vdao = new VilleDAO();
+		return vdao.getVillesPagination(page);
+	}
+	
+	@PutMapping("/ville")
+	public void modifierVille(
+			@RequestParam(required=true, value="codeCommuneINSEE") String codeCommuneINSEE,
+			@RequestParam(required=true, value="nomCommune") String nomCommune,
+			@RequestParam(required=true, value="codePostal") String codePostal,
+			@RequestParam(required=true, value="libelleAcheminement") String libelleAcheminement,
+			@RequestParam(required=true, value="ligne5") String ligne5,
+			@RequestParam(required=true, value="latitude") String latitude,
+			@RequestParam(required=true, value="longitude") String longitude
+	) {
+		VilleDAO vdao = new VilleDAO();
+		Ville ville = new Ville();
+		ville.setCodeCommuneINSEE(codeCommuneINSEE);
+		ville.setNomCommune(nomCommune);
+		ville.setCodePostal(codePostal);
+		ville.setLibelleAcheminement(libelleAcheminement);
+		ville.setLigne5(ligne5);
+		ville.setLongitude(longitude);
+		ville.setLatitude(latitude);
+		ville.setEstSupprime(false);
+		
+		vdao.modifier(ville);
+	}
+	
 }

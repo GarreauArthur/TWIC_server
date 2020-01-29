@@ -203,4 +203,62 @@ public class VilleDAO {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Sélectionne 50 villes, ]50*page,50*(page+1)]
+	 * @param page
+	 * @return
+	 */
+	public ArrayList<Ville> getVillesPagination(int page) {
+		try {
+			Connection con = JDBCConfigurationSol1.getConnection();
+			String query = "SELECT * FROM ville_france WHERE estSupprimee = 0 LIMIT 50 OFFSET ?";
+			
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setInt(1, 50*page);
+
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			
+			ArrayList<Ville> villes = new ArrayList<Ville>();
+			while(rs.next()){
+		    	Ville ville = new Ville();
+		    	ville.setCodeCommuneINSEE(rs.getString("Code_commune_INSEE"));
+				ville.setNomCommune(rs.getString("Nom_commune"));
+				ville.setCodePostal(rs.getString("Code_postal"));
+				ville.setLibelleAcheminement(rs.getString("Libelle_acheminement"));
+				ville.setLigne5(rs.getString("Ligne_5"));
+				ville.setLatitude(rs.getString("Latitude"));
+				ville.setLongitude(rs.getString("Longitude"));
+				villes.add(ville);
+		    }
+		    return villes;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	
+	public void modifier(Ville ville) {
+		
+		try {
+			Connection con = JDBCConfigurationSol1.getConnection();
+			String query = "UPDATE ville_france SET Nom_commune = ?, Code_postal = ?,"
+					+ " Libelle_acheminement = ?, Ligne_5 = ?, Latitude = ?, Longitude = ?"
+					+ " WHERE Code_commune_INSEE = ?";
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, ville.getNomCommune());
+			preparedStatement.setString(2, ville.getCodePostal());
+			preparedStatement.setString(3, ville.getLibelleAcheminement());
+			preparedStatement.setString(4, ville.getLigne5());
+			preparedStatement.setString(5, ville.getLatitude());
+			preparedStatement.setString(6, ville.getLongitude());
+			preparedStatement.setString(7, ville.getCodeCommuneINSEE());
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
 }
